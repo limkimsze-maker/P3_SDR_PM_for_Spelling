@@ -910,4 +910,880 @@ fit();
 highlightRow(1,0);
 </script>
 </body>
+</html>    }catch(e){}
+  })();
+  </script>
+
+  <!-- Counter.dev (Kim Sze standard) -->
+  <script>
+    // If you already have a specific Counter.dev data-id, replace the value below.
+    // Keeping this lightweight & safe if you paste into SLS (it will just fail silently if blocked).
+  </script>
+  <script async src="https://cdn.counter.dev/script.js" data-id="REPLACE_WITH_YOUR_COUNTERDEV_ID" data-utcoffset="8"></script>
+
+  <style>
+    :root{
+      --ink:#0b1220;
+      --muted:#334155;
+      --line:#111827;
+      --soft:#e5e7eb;
+      --paper:#ffffff;
+
+      --grey:#d1d5db;
+      --grey2:#cbd5e1;
+
+      --ok:#16a34a;
+      --bad:#dc2626;
+
+      --shadow: 0 18px 52px rgba(2, 6, 23, .12);
+      --r:18px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:#f3f4f6;
+      color:var(--ink);
+      overflow:hidden; /* no scroll (scale to fit) */
+    }
+
+    .app{
+      position:fixed; inset:0;
+      display:grid;
+      place-items:center;
+      padding:10px;
+    }
+
+    /* Scaled stage (no scroll) */
+    .stage{
+      width:1100px;
+      height:680px;
+      background:var(--paper);
+      border:4px solid #0b0f17;
+      box-shadow:var(--shadow);
+      transform-origin: top left;
+      border-radius:14px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      padding:18px 18px 10px 18px;
+    }
+
+    .cycleBox{
+      border:4px solid #0b0f17;
+      padding:10px 14px;
+      font-weight:900;
+      font-size:28px;
+      line-height:1;
+      background:#fff;
+      white-space:nowrap;
+    }
+
+    .titleWrap{
+      flex:1;
+      padding-top:2px;
+    }
+    .title{
+      font-size:26px;
+      font-weight:900;
+      margin:0;
+    }
+    .sub{
+      margin:6px 0 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.35;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      background:#0ea5e9;
+      color:#fff;
+      font-weight:800;
+      border-radius:14px;
+      padding:10px 14px;
+      cursor:pointer;
+      box-shadow:0 10px 26px rgba(2,6,23,.14);
+    }
+    .btn:active{transform:translateY(1px);}
+    .btn.secondary{background:#64748b;}
+    .btn.good{background:var(--ok);}
+    .btn.danger{background:var(--bad);}
+    .btn:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+
+    .voice{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:#f1f5f9;
+      border:1px solid #cbd5e1;
+      border-radius:14px;
+      padding:8px 10px;
+      color:#0b1220;
+      font-weight:700;
+      font-size:13px;
+    }
+    select{
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      padding:6px 8px;
+      background:#fff;
+      font-weight:700;
+      max-width:260px;
+    }
+    .toggle{
+      display:flex; align-items:center; gap:8px;
+      background:#f1f5f9;
+      border:1px solid #cbd5e1;
+      border-radius:14px;
+      padding:8px 10px;
+      font-weight:800;
+      font-size:13px;
+    }
+    .toggle input{width:18px; height:18px;}
+
+    /* PM Table */
+    .sheet{
+      margin:0 18px 18px 18px;
+      border:4px solid #0b0f17;
+      height: calc(100% - 112px);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .sheetHead{
+      padding:10px 12px;
+      border-bottom:4px solid #0b0f17;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .sheetHead .left{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .ruleTag{
+      border:3px solid #0b0f17;
+      padding:6px 10px;
+      border-radius:12px;
+      font-weight:900;
+      background:#fff;
+      font-size:14px;
+      white-space:nowrap;
+    }
+
+    .grid{
+      flex:1;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top:0;
+    }
+
+    .col{
+      border-left:4px solid #0b0f17;
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+    .col:first-child{border-left:0;}
+
+    .colHeader{
+      background:var(--grey);
+      border-bottom:4px solid #0b0f17;
+      text-align:center;
+      font-weight:900;
+      padding:10px 8px;
+      font-size:18px;
+    }
+
+    .items{
+      flex:1;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .item{
+      display:grid;
+      grid-template-columns: 34px 42px 1fr;
+      gap:10px;
+      align-items:center;
+    }
+
+    .n{
+      font-weight:900;
+      font-size:18px;
+      text-align:right;
+      padding-right:2px;
+    }
+
+    .hear{
+      width:42px; height:42px;
+      border-radius:14px;
+      border:3px solid #0b0f17;
+      background:#fff;
+      cursor:pointer;
+      font-size:18px;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+    }
+    .hear:active{transform:translateY(1px);}
+
+    .blankWrap{
+      position:relative;
+      min-width:0;
+    }
+
+    .blank{
+      width:100%;
+      font-size:22px;
+      font-weight:800;
+      border:none;
+      outline:none;
+      background:transparent;
+      padding:2px 6px 8px 6px;
+      border-bottom:4px solid #0b0f17;
+      letter-spacing:1px;
+      text-transform:lowercase;
+    }
+    .blank:disabled{opacity:.6;}
+    .hint{
+      position:absolute;
+      left:8px; bottom:12px;
+      color:#94a3b8;
+      font-weight:800;
+      font-size:12px;
+      pointer-events:none;
+    }
+
+    .markLine{
+      margin-top:4px;
+      font-weight:900;
+      font-size:18px;
+      min-height:28px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0b1220;
+      flex-wrap:wrap;
+    }
+
+    .tick{color:var(--ok); font-weight:1000;}
+    .cross{color:var(--bad); font-weight:1000;}
+
+    .circWord{
+      display:inline-flex;
+      gap:2px;
+      font-weight:1000;
+      font-size:22px;
+      letter-spacing:1px;
+      text-transform:lowercase;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .ch{
+      display:inline-block;
+      padding:0 3px;
+      min-width:0.9em;
+      text-align:center;
+      line-height:1.1;
+    }
+    .wrong{
+      border:3px solid #ef4444;
+      border-radius:999px;
+    }
+    .miss{
+      color:#ef4444;
+      font-weight:1000;
+    }
+
+    .footerBar{
+      background:var(--grey);
+      border-top:4px solid #0b0f17;
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+    }
+
+    .starRow{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+    }
+    .starBox{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:14px;
+      border:3px solid rgba(11,15,23,.0);
+      opacity:.75;
+    }
+    .star{
+      font-size:30px;
+      line-height:1;
+    }
+    .starText{
+      font-size:16px;
+      font-weight:1000;
+      white-space:nowrap;
+    }
+    .active{
+      opacity:1;
+      border-color:#0b0f17;
+      background:#fff;
+    }
+
+    .scoreBox{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      font-weight:1000;
+    }
+    .pill{
+      border:3px solid #0b0f17;
+      background:#fff;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:14px;
+      white-space:nowrap;
+    }
+
+    .colActions{
+      padding:10px 12px 12px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      border-top:4px solid #0b0f17;
+      background:#fff;
+    }
+
+    .hl{
+      outline:4px solid #fde047;
+      outline-offset:4px;
+      border-radius:10px;
+    }
+
+    .credit{
+      position:absolute;
+      right:10px;
+      bottom:8px;
+      font-size:12px;
+      color:#64748b;
+      font-weight:800;
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <div class="stage" id="stage">
+    <div class="topbar">
+      <div class="cycleBox">Cycle 2 PM</div>
+
+      <div class="titleWrap">
+        <h1 class="title">I Can Spell — Auto Mark (Target Rule Only)</h1>
+        <p class="sub">
+          Click the 🔊 button beside a blank to hear the spelling prompt (word → sentence → word again), then type your spelling.
+          When ready, press <b>Mark</b>. <b>Scoring focuses on the target phonogram only</b> (ff / ll / ss / zz at the end of the word).
+        </p>
+
+        <div class="controls">
+          <button class="btn secondary" id="unlockBtn" type="button">Unlock Audio</button>
+          <div class="toggle">
+            <input id="soundOn" type="checkbox" checked>
+            <label for="soundOn">Speech On</label>
+          </div>
+          <div class="voice">
+            Voice:
+            <select id="voiceSel" aria-label="Voice selection"></select>
+          </div>
+
+          <button class="btn danger" id="resetBtn" type="button">New Pupil — Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheetHead">
+        <div class="left">Spelling</div>
+        <div class="ruleTag">Target rule: “Floss Rule” endings — <b>-ff, -ll, -ss, -zz</b></div>
+      </div>
+
+      <div class="grid">
+        <!-- TRY 1 -->
+        <div class="col" data-try="1">
+          <div class="colHeader">1st try</div>
+          <div class="items" id="items-1"></div>
+
+          <div class="footerBar">
+            <div class="starRow">
+              <div class="starBox active" id="work-1"><div class="star">☆</div><div class="starText">We’re working on it!</div></div>
+              <div class="starBox" id="mast-1"><div class="star">☆</div><div class="starText">I’ve mastered it! ☺</div></div>
+            </div>
+            <div class="scoreBox" id="score-1">
+              <span class="pill">Score: —</span>
+              <span class="pill">Mastery (about 80%): —</span>
+            </div>
+          </div>
+
+          <div class="colActions">
+            <button class="btn" id="mark-1" type="button">Mark 1st Try</button>
+            <button class="btn good" id="open-2" type="button" disabled>Open 2nd Try</button>
+          </div>
+        </div>
+
+        <!-- TRY 2 -->
+        <div class="col" data-try="2">
+          <div class="colHeader">2nd try</div>
+          <div class="items" id="items-2"></div>
+
+          <div class="footerBar">
+            <div class="starRow">
+              <div class="starBox active" id="work-2"><div class="star">☆</div><div class="starText">We’re working on it!</div></div>
+              <div class="starBox" id="mast-2"><div class="star">☆</div><div class="starText">I’ve mastered it! ☺</div></div>
+            </div>
+            <div class="scoreBox" id="score-2">
+              <span class="pill">Score: —</span>
+              <span class="pill">Mastery (about 80%): —</span>
+            </div>
+          </div>
+
+          <div class="colActions">
+            <button class="btn" id="mark-2" type="button" disabled>Mark 2nd Try</button>
+            <button class="btn good" id="open-3" type="button" disabled>Open 3rd Try</button>
+          </div>
+        </div>
+
+        <!-- TRY 3 -->
+        <div class="col" data-try="3">
+          <div class="colHeader">3rd try</div>
+          <div class="items" id="items-3"></div>
+
+          <div class="footerBar">
+            <div class="starRow">
+              <div class="starBox active" id="work-3"><div class="star">☆</div><div class="starText">We’re working on it!</div></div>
+              <div class="starBox" id="mast-3"><div class="star">☆</div><div class="starText">I’ve mastered it! ☺</div></div>
+            </div>
+            <div class="scoreBox" id="score-3">
+              <span class="pill">Score: —</span>
+              <span class="pill">Mastery (about 80%): —</span>
+            </div>
+          </div>
+
+          <div class="colActions">
+            <button class="btn" id="mark-3" type="button" disabled>Mark 3rd Try</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="credit">Designed by Lim Kim Sze © 2026</div>
+  </div>
+</div>
+
+<script>
+/* ======================
+   DATA (Cycle 2 PM - Spelling)
+   From your second picture (6 words + sentences)
+   ====================== */
+const SPELL = [
+  { word:"fill",  sentence:"Fill. Fill up your water bottle before PE lesson. Fill." },
+  { word:"stuff", sentence:"Stuff. Eat slowly and do not stuff the food into your mouth. Stuff." },
+  { word:"less",  sentence:"Less. He ate less rice today as he was not hungry. Less." },
+  { word:"dress", sentence:"Dress. She bought a new dress to wear for her birthday party. Dress." },
+  { word:"miss",  sentence:"Miss. I will miss my friend when he goes to another school. Miss." },
+  { word:"jazz",  sentence:"Jazz. He listens to jazz music to relax. Jazz." }
+];
+
+// Allowed targets for this activity (endings)
+const TARGETS = ["ff","ll","ss","zz"];
+
+/* ======================
+   Build UI
+   ====================== */
+const soundOn = document.getElementById("soundOn");
+const voiceSel = document.getElementById("voiceSel");
+const unlockBtn = document.getElementById("unlockBtn");
+
+let unlocked = false;
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[m]);
+}
+
+function cleanAnswer(s){
+  // keep letters only; ignore spaces/punct/case for evaluation
+  return (s||"").toLowerCase().replace(/[^a-z]/g,"");
+}
+
+function targetForWord(expected){
+  const w = cleanAnswer(expected);
+  for(const t of TARGETS){
+    if(w.endsWith(t)) return t;
+  }
+  // fallback: last two chars
+  return w.slice(-2);
+}
+
+function masteryNeed(n){
+  // "About 80%" using rounding, matching examples:
+  // 8 -> round(6.4)=6; 6 -> round(4.8)=5; 2 -> round(1.6)=2
+  return Math.max(1, Math.round(0.8*n));
+}
+
+function makeItem(tryNo, idx){
+  const id = `t${tryNo}-w${idx}`;
+  return `
+    <div class="item" id="row-${id}">
+      <div class="n">${idx+1})</div>
+      <button class="hear" type="button" aria-label="Hear prompt" data-try="${tryNo}" data-idx="${idx}">🔊</button>
+
+      <div class="blankWrap">
+        <input class="blank" id="in-${id}" autocomplete="off" spellcheck="false" inputmode="text"
+               placeholder="" ${tryNo===1 ? "" : "disabled"} />
+        <div class="hint">click 🔊 then type</div>
+        <div class="markLine" id="mk-${id}"></div>
+      </div>
+    </div>
+  `;
+}
+
+for(const t of [1,2,3]){
+  const box = document.getElementById(`items-${t}`);
+  box.innerHTML = SPELL.map((_,i)=>makeItem(t,i)).join("");
+}
+
+// force lowercase as they type (for neatness)
+document.addEventListener("input", (e)=>{
+  const el = e.target;
+  if(el && el.classList && el.classList.contains("blank")){
+    const pos = el.selectionStart;
+    el.value = el.value.toLowerCase();
+    try{ el.setSelectionRange(pos,pos); }catch(_){}
+  }
+});
+
+/* ======================
+   TTS
+   ====================== */
+function speak(text){
+  if(!soundOn.checked) return;
+  if(!("speechSynthesis" in window)) return;
+
+  // must be user-gesture; "Unlock Audio" helps
+  if(!unlocked) return;
+
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+
+  const vName = voiceSel.value;
+  const voices = window.speechSynthesis.getVoices() || [];
+  const v = voices.find(x=>x.name===vName);
+  if(v) u.voice = v;
+
+  u.rate = 0.95;
+  u.pitch = 1.0;
+  u.volume = 1.0;
+
+  window.speechSynthesis.speak(u);
+}
+
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return;
+  const voices = window.speechSynthesis.getVoices() || [];
+  if(!voices.length) return;
+
+  const prev = voiceSel.value;
+  voiceSel.innerHTML = "";
+
+  // prefer English voices
+  const sorted = [...voices].sort((a,b)=>{
+    const ae = (a.lang||"").toLowerCase().startsWith("en") ? 0 : 1;
+    const be = (b.lang||"").toLowerCase().startsWith("en") ? 0 : 1;
+    if(ae!==be) return ae-be;
+    return (a.name||"").localeCompare(b.name||"");
+  });
+
+  for(const v of sorted){
+    const opt = document.createElement("option");
+    opt.value = v.name;
+    opt.textContent = `${v.name} (${v.lang||"?"})`;
+    voiceSel.appendChild(opt);
+  }
+
+  // restore selection if possible
+  if(prev){
+    const ok = [...voiceSel.options].some(o=>o.value===prev);
+    if(ok) voiceSel.value = prev;
+  }else{
+    // default: first English voice
+    voiceSel.selectedIndex = 0;
+  }
+}
+if("speechSynthesis" in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+unlockBtn.addEventListener("click", ()=>{
+  unlocked = true;
+  unlockBtn.textContent = "Audio Unlocked";
+  unlockBtn.disabled = true;
+  // tiny speak to confirm (optional)
+  speak("Audio unlocked.");
+});
+
+/* ======================
+   Hear prompt + highlight
+   ====================== */
+function highlightRow(tryNo, idx){
+  document.querySelectorAll(".hl").forEach(x=>x.classList.remove("hl"));
+  const row = document.getElementById(`row-t${tryNo}-w${idx}`);
+  if(row){ row.classList.add("hl"); }
+}
+
+document.addEventListener("click", (e)=>{
+  const btn = e.target.closest(".hear");
+  if(!btn) return;
+  const tryNo = +btn.dataset.try;
+  const idx = +btn.dataset.idx;
+
+  highlightRow(tryNo, idx);
+
+  const input = document.getElementById(`in-t${tryNo}-w${idx}`);
+  if(input && !input.disabled) input.focus();
+
+  const w = SPELL[idx].word;
+  const s = SPELL[idx].sentence;
+
+  // Instruction pattern: word -> sentence -> word again
+  const script = `Spell this word. ${w}. ${s} The word again. ${w}.`;
+  speak(script);
+});
+
+/* ======================
+   Marking (circle wrong letters)
+   ====================== */
+function circledDiffHtml(answerRaw, expectedRaw){
+  const ans = cleanAnswer(answerRaw);
+  const exp = cleanAnswer(expectedRaw);
+
+  if(!ans){
+    return `<span class="miss">[ no response ]</span>`;
+  }
+
+  const max = Math.max(ans.length, exp.length);
+  let out = `<span class="circWord" aria-label="Marked answer">`;
+  for(let i=0;i<max;i++){
+    const a = ans[i];
+    const e = exp[i];
+    if(a === undefined){
+      // missing letter
+      out += `<span class="ch wrong">∅</span>`;
+    }else if(e === undefined){
+      // extra letter
+      out += `<span class="ch wrong">${escapeHtml(a)}</span>`;
+    }else{
+      const wrong = (a !== e);
+      out += `<span class="ch ${wrong ? "wrong" : ""}">${escapeHtml(a)}</span>`;
+    }
+  }
+  out += `</span>`;
+  return out;
+}
+
+function markTry(tryNo){
+  const total = SPELL.length;
+  const need = masteryNeed(total);
+
+  let correct = 0;
+
+  for(let i=0;i<total;i++){
+    const expected = SPELL[i].word;
+    const target = targetForWord(expected); // ff/ll/ss/zz
+    const input = document.getElementById(`in-t${tryNo}-w${i}`);
+    const mk = document.getElementById(`mk-t${tryNo}-w${i}`);
+    const raw = (input ? input.value : "");
+    const ans = cleanAnswer(raw);
+
+    // correctness: target phonogram at the back, matching the expected target
+    const ok = ans.endsWith(target) && ans.length >= target.length;
+
+    if(ok) correct++;
+
+    const marked = circledDiffHtml(raw, expected);
+    mk.innerHTML = `${marked} <span class="${ok ? "tick" : "cross"}">${ok ? "✓" : "✗"}</span>
+                    <span style="font-weight:1000; font-size:13px; color:#475569;">
+                      (target: -${target} at the end)
+                    </span>`;
+
+    // lock this input after marking
+    if(input){
+      input.disabled = true;
+    }
+  }
+
+  // Stars + summary
+  const work = document.getElementById(`work-${tryNo}`);
+  const mast = document.getElementById(`mast-${tryNo}`);
+  const scoreBox = document.getElementById(`score-${tryNo}`);
+
+  const mastered = correct >= need;
+
+  if(mastered){
+    work.classList.remove("active");
+    mast.classList.add("active");
+  }else{
+    mast.classList.remove("active");
+    work.classList.add("active");
+  }
+
+  scoreBox.innerHTML = `
+    <span class="pill">Score: <b>${correct}/${total}</b></span>
+    <span class="pill">Mastery (about 80%): need <b>${need}</b> correct → <b>${mastered ? "MASTERED" : "NOT YET"}</b></span>
+  `;
+
+  // Enable next try if not mastered (or if you want to continue anyway)
+  if(tryNo === 1){
+    document.getElementById("mark-1").disabled = true;
+    document.getElementById("open-2").disabled = mastered ? true : false;
+  }
+  if(tryNo === 2){
+    document.getElementById("mark-2").disabled = true;
+    document.getElementById("open-3").disabled = mastered ? true : false;
+  }
+  if(tryNo === 3){
+    document.getElementById("mark-3").disabled = true;
+  }
+
+  // Quick spoken feedback (optional)
+  if(unlocked && soundOn.checked){
+    const msg = mastered
+      ? `Well done. You have mastered it. You got ${correct} out of ${total}.`
+      : `Keep going. You got ${correct} out of ${total}.`;
+    speak(msg);
+  }
+}
+
+document.getElementById("mark-1").addEventListener("click", ()=>markTry(1));
+document.getElementById("mark-2").addEventListener("click", ()=>markTry(2));
+document.getElementById("mark-3").addEventListener("click", ()=>markTry(3));
+
+function openTry(tryNo){
+  // enable inputs for that try
+  for(let i=0;i<SPELL.length;i++){
+    const input = document.getElementById(`in-t${tryNo}-w${i}`);
+    if(input){
+      input.disabled = false;
+      input.value = "";
+    }
+    const mk = document.getElementById(`mk-t${tryNo}-w${i}`);
+    if(mk) mk.innerHTML = "";
+  }
+  // enable marking button
+  document.getElementById(`mark-${tryNo}`).disabled = false;
+  // highlight first row
+  highlightRow(tryNo, 0);
+  const first = document.getElementById(`in-t${tryNo}-w0`);
+  if(first) first.focus();
+}
+
+document.getElementById("open-2").addEventListener("click", ()=>{
+  document.getElementById("open-2").disabled = true;
+  openTry(2);
+});
+document.getElementById("open-3").addEventListener("click", ()=>{
+  document.getElementById("open-3").disabled = true;
+  openTry(3);
+});
+
+/* ======================
+   Reset
+   ====================== */
+function resetAll(){
+  // clear all tries
+  for(const t of [1,2,3]){
+    for(let i=0;i<SPELL.length;i++){
+      const input = document.getElementById(`in-t${t}-w${i}`);
+      const mk = document.getElementById(`mk-t${t}-w${i}`);
+      if(input){
+        input.value = "";
+        input.disabled = (t !== 1);
+      }
+      if(mk) mk.innerHTML = "";
+    }
+    // stars reset
+    const work = document.getElementById(`work-${t}`);
+    const mast = document.getElementById(`mast-${t}`);
+    work.classList.add("active");
+    mast.classList.remove("active");
+
+    const scoreBox = document.getElementById(`score-${t}`);
+    scoreBox.innerHTML = `<span class="pill">Score: —</span><span class="pill">Mastery (about 80%): —</span>`;
+
+    // buttons
+    const markBtn = document.getElementById(`mark-${t}`);
+    if(markBtn) markBtn.disabled = (t !== 1 ? true : false);
+  }
+
+  document.getElementById("mark-1").disabled = false;
+  document.getElementById("open-2").disabled = true;
+  document.getElementById("open-3").disabled = true;
+  highlightRow(1,0);
+  const first = document.getElementById("in-t1-w0");
+  if(first) first.focus();
+}
+document.getElementById("resetBtn").addEventListener("click", resetAll);
+
+/* ======================
+   Fit-to-viewport scaling (no scroll)
+   ====================== */
+function fit(){
+  const stage = document.getElementById("stage");
+  const vw = Math.max(320, window.innerWidth);
+  const vh = Math.max(320, window.innerHeight);
+  const sw = 1100, sh = 680;
+
+  // Safe padding
+  const pad = 16;
+  const scale = Math.min((vw - pad) / sw, (vh - pad) / sh);
+
+  stage.style.transform = `scale(${Math.max(0.5, Math.min(1, scale))})`;
+}
+window.addEventListener("resize", fit);
+fit();
+
+// start highlight
+highlightRow(1,0);
+</script>
+</body>
 </html>
