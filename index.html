@@ -4551,59 +4551,119 @@ function applySession(key, silent){
   scorePill.classList.remove("scoreBad","scoreOk");
 
   tryUnlocked = {1:true, 2:false, 3:false};
-  marked = {1:false, 2:false, 3:false};
-  tryScore = {1:null, 2:null, 3:null};
+function renderWorkViewer(rec){
+  if(!workViewer) return;
 
-  tryDate = {1: todayYMD(), 2:"", 3:""};
-  renderDates();
+  if(!rec || !rec.work){
+    workViewer.innerHTML = "";
+    return;
+  }
 
-  const len1 = (TRIES[1]||[]).length, len2 = (TRIES[2]||[]).length, len3 = (TRIES[3]||[]).length;
-  stateAnswers = {1:new Array(len1).fill(""), 2:new Array(len2).fill(""), 3:new Array(len3).fill("")};
-  stateMarks   = {1:new Array(len1).fill(""), 2:new Array(len2).fill(""), 3:new Array(len3).fill("")};
+  const pupil = escapeHtml(rec.studentName || "");
+  const sess  = escapeHtml(rec.sessionKey || "");
+  const title = escapeHtml(rec.sessionTitle || "");
 
-  renderSessionHeader();
-  rebuildAll();
-  setCurrentTry(1);
+  let html = `
+    <div style="border:3px solid var(--line); border-radius:14px; padding:12px; background:#fff;">
+      <div style="display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap; align-items:center;">
 
-  if(!silent){
-    const first = document.getElementById("in-t1-0");
-    if(first) first.focus();
+        <div style="font-weight:1000;">
+          Pupil Work — <span style="text-decoration:underline;">${pupil}</span>
+          <div class="tiny">${sess} • ${title}</div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btnSmall good" id="printWorkBtn">Print / Save PDF</button>
+          <button class="btnSmall danger" id="closeWorkBtn">Hide</button>
+        </div>
+
+      </div>
+      <div style="height:10px;"></div>
+  `;
+
+  for(const t of [1,2,3]){
+
+    const w = rec.work[t];
+    if(!w) continue;
+
+    const tryLabel = (t===1?"1st try":t===2?"2nd try":"3rd try");
+    const dt = escapeHtml(w.date || "");
+    const items = Array.isArray(w.items) ? w.items : [];
+
+    html += `
+      <div style="margin-top:12px; border-top:2px dashed #cbd5e1; padding-top:10px;">
+
+        <div style="font-weight:1000; margin-bottom:8px;">
+          ${tryLabel}
+          <span class="tiny">(${dt || "no date"})</span>
+
+          ${
+            w.marked
+              ? `<span class="tagOk" style="margin-left:8px;">Marked</span>`
+              : `<span class="tagBad" style="margin-left:8px;">Not marked</span>`
+          }
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:48px;">#</th>
+              <th style="width:160px;">Expected</th>
+              <th>Response + Marking</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    items.forEach((it, i)=>{
+
+      const expected = it.expected || "";
+      const response = it.response || "";
+      const ok = isCorrect(expected, response);
+
+      html += `
+        <tr>
+          <td>${i+1}</td>
+
+          <td style="text-transform:lowercase;">
+            ${escapeHtml(expected)}
+          </td>
+
+          <td>
+            ${circledDiffHtml(response, expected)}
+
+            <span class="${ok?"tick":"cross"}" style="margin-left:6px;">
+              ${ok?"✓":"✗"}
+            </span>
+
+            <div class="correctSp">
+              <span class="label">Correct spelling:</span>
+              ${escapeHtml(expected)}
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  html += `</div>`;
+
+  workViewer.innerHTML = html;
+
+  // Buttons
+  const closeBtn = document.getElementById("closeWorkBtn");
+  if(closeBtn){
+    closeBtn.onclick = ()=> workViewer.innerHTML = "";
+  }
+
+  const printBtn = document.getElementById("printWorkBtn");
+  if(printBtn){
+    printBtn.onclick = ()=> openPrintWork(rec);
   }
 }
-
-sessionSel.addEventListener("change", ()=>{
-  const key = sessionSel.value;
-  if(marked[1] || marked[2] || marked[3] || (cleanAnswer(studentName.value).length>0)){
-    const ok = confirm("Switching session will clear the current pupil’s work on-screen. Continue?");
-    if(!ok){
-      sessionSel.value = Object.keys(SESSION_BANK).includes(sessionTag.textContent) ? sessionTag.textContent : "C1S1";
-      return;
-    }
-  }
-  applySession(key);
-});
-
-/* ======================
-   Init
-   ====================== */
-(function initSessions(){
-  const keys = Object.keys(SESSION_BANK);
-  keys.sort((a,b)=>{
-    const pa = a.match(/^C(\d+)S(\d+)$/), pb = b.match(/^C(\d+)S(\d+)$/);
-    const ca = +(pa?.[1]||0), sa = +(pa?.[2]||0);
-    const cb = +(pb?.[1]||0), sb = +(pb?.[2]||0);
-    if(ca !== cb) return ca - cb;
-    return sa - sb;
-  });
-
-  sessionSel.innerHTML = keys.map(k=>{
-    const t = SESSION_BANK[k].title.replace(/^C\d+S\d+\s—\s?/, "");
-    return `<option value="${k}">Cycle ${k.match(/^C(\d+)/)[1]} Session ${k.match(/^C\d+S(\d+)/)[1]} — ${escapeHtml(t)}</option>`;
-  }).join("");
-
-  sessionSel.value = "C1S1";
-  applySession("C1S1", true);
-})();
-</script>
-</body>
-</html>
